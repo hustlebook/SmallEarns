@@ -248,16 +248,15 @@ const InvoiceSection: React.FC<InvoiceSectionProps> = ({
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="w-full p-2 sm:p-4 md:p-6 md:max-w-7xl mx-auto">
       {/* Header Section */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-bold text-white mb-2">Invoices</h1>
           <p className="text-gray-400">Create and manage professional invoices</p>
         </div>
-        
         {/* Quick Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-gray-600/10 border border-emerald-700 rounded-lg p-4 text-center">
             <div className="text-lg font-bold text-yellow-300">${totalDraft.toFixed(2)}</div>
             <div className="text-xs text-gray-400">Draft</div>
