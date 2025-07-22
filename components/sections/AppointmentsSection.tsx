@@ -56,7 +56,7 @@ const AppointmentsSection = ({ appointments, clients, addAppointment, updateAppo
       days.push(
         <div
           key={day}
-          className={`h-24 bg-gray-800 border border-gray-700 p-2 cursor-pointer hover:bg-gray-700 transition-colors duration-200 ${
+          className={`h-24 min-h-[44px] bg-gray-800 border border-gray-700 p-2 cursor-pointer hover:bg-gray-700 transition-colors duration-200 ${
             isToday ? 'ring-2 ring-emerald-500' : ''
           }`}
           onClick={() => {
@@ -93,7 +93,7 @@ const AppointmentsSection = ({ appointments, clients, addAppointment, updateAppo
     }
 
     return (
-      <div className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-7 gap-1 overflow-x-auto min-w-[600px]">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
           <div key={day} className="h-8 bg-gray-900 flex items-center justify-center text-sm font-medium text-gray-400">
             {day}
@@ -121,7 +121,7 @@ const AppointmentsSection = ({ appointments, clients, addAppointment, updateAppo
           </button>
           <button
             onClick={() => setShowAddModal(true)}
-            className="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors duration-200 flex items-center space-x-2"
+            className="bg-emerald-600 text-white px-4 py-3 sm:py-2 min-h-[44px] rounded-lg hover:bg-emerald-700 transition-colors duration-200 flex items-center space-x-2"
           >
             <Plus className="w-4 h-4" />
             <span>Add Appointment</span>
