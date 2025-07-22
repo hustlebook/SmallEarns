@@ -234,11 +234,11 @@ const MainLayout = ({ children, currentView, setCurrentView }) => {
         <div className="relative">
           {/* Left indicator */}
           {showLeftIndicator && (
-            <div className="pointer-events-none absolute left-0 top-0 h-full w-6 bg-gradient-to-r from-gray-900/80 to-transparent z-20" />
+            <div className="pointer-events-none absolute left-0 top-0 h-full w-6 bg-gradient-to-r from-emerald-700/70 to-transparent z-20" />
           )}
           {/* Right indicator */}
           {showRightIndicator && (
-            <div className="pointer-events-none absolute right-0 top-0 h-full w-6 bg-gradient-to-l from-gray-900/80 to-transparent z-20" />
+            <div className="pointer-events-none absolute right-0 top-0 h-full w-6 bg-gradient-to-l from-emerald-700/70 to-transparent z-20" />
           )}
           <div
             ref={navRef}
