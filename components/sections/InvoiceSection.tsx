@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, FileText, Send, Eye, Download, DollarSign, Calendar, Search, Filter, ChevronDown } from 'lucide-react';
+import { Modal } from '../Shared/Modal';
 
 interface Invoice {
   id: string;
@@ -356,34 +357,27 @@ const InvoiceSection: React.FC<InvoiceSectionProps> = ({
       </div>
 
       {/* Create Invoice Form */}
-      {showForm && (
-        <div className="bg-gray-800 border border-gray-600 rounded-xl p-6 mb-6">
-          <h3 className="text-xl font-semibold text-white mb-4 flex items-center space-x-2">
-            <FileText className="text-emerald-400" size={20} />
-            <span>Create New Invoice</span>
-          </h3>
-          
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Business Information Section */}
-            <div className="bg-gray-700/30 rounded-lg p-6">
-              <h4 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
-                <span className="w-6 h-6 bg-emerald-600 rounded-full flex items-center justify-center text-xs text-white">1</span>
-                <span>Your Business Information</span>
-              </h4>
+      <Modal isOpen={showForm} onClose={() => setShowForm(false)} title="Create New Invoice" maxWidth="md">
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Business Information Section */}
+          <div className="bg-gray-700/30 rounded-lg p-6">
+            <h4 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
+              <span className="w-6 h-6 bg-emerald-600 rounded-full flex items-center justify-center text-xs text-white">1</span>
+              <span>Your Business Information</span>
+            </h4>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Business Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={newInvoice.businessName}
+                  onChange={(e) => setNewInvoice({...newInvoice, businessName: e.target.value})}
+                  className="w-full px-4 py-2.75 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  placeholder="Enter your business name"
+                />
+              </div>
               
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Business Name *</label>
-                  <input
-                    type="text"
-                    required
-                    value={newInvoice.businessName}
-                    onChange={(e) => setNewInvoice({...newInvoice, businessName: e.target.value})}
-                    className="w-full px-4 py-2.75 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    placeholder="Enter your business name"
-                  />
-                </div>
-                
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">Business Tax ID/EIN</label>
                   <input
@@ -778,8 +772,7 @@ const InvoiceSection: React.FC<InvoiceSectionProps> = ({
               </button>
             </div>
           </form>
-        </div>
-      )}
+        </Modal>
 
       {/* Invoices List */}
       <div className="space-y-4">

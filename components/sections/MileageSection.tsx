@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Car, MapPin, Calendar, Search, Filter, ChevronDown, DollarSign, Clock, Trash2, Edit3 } from 'lucide-react';
 import DateFilter from '../Shared/DateFilter';
+import { Modal } from '../Shared/Modal';
 
 interface MileageEntry {
   id: string;
@@ -319,228 +320,220 @@ const MileageSection: React.FC<MileageSectionProps> = ({
       </div>
 
       {/* Mileage Entry Form */}
-      {showForm && (
-        <div className="bg-gray-800 border border-gray-600 rounded-xl p-6 mb-6">
-          <h3 className="text-xl font-semibold text-white mb-4 flex items-center space-x-2">
-            <Car className="text-emerald-400" size={20} />
-            <span>{editingEntry ? 'Edit Trip Entry' : 'Log New Trip'}</span>
-          </h3>
-          
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Trip Information */}
-            <div className="bg-gray-700/30 rounded-lg p-4">
-              <h4 className="text-lg font-semibold text-white mb-4">Trip Information</h4>
-              
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Trip Date *</label>
-                  <input
-                    type="date"
-                    required
-                    value={formData.tripDate}
-                    onChange={(e) => setFormData(prev => ({ ...prev, tripDate: e.target.value }))}
-                    className="w-full px-4 py-2.75 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Trip Category *</label>
-                  <select
-                    required
-                    value={formData.tripCategory}
-                    onChange={(e) => setFormData(prev => ({ ...prev, tripCategory: e.target.value as any }))}
-                    className="w-full px-4 py-2.75 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  >
-                    <option value="business">Business</option>
-                    <option value="personal">Personal</option>
-                    <option value="commuting">Commuting</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Vehicle</label>
-                  <input
-                    type="text"
-                    value={formData.vehicle}
-                    onChange={(e) => setFormData(prev => ({ ...prev, vehicle: e.target.value }))}
-                    className="w-full px-4 py-2.75 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    placeholder="e.g., 2023 Honda Civic, Company Vehicle #1"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Odometer & Distance */}
-            <div className="bg-gray-700/30 rounded-lg p-4">
-              <h4 className="text-lg font-semibold text-white mb-4">Odometer Readings</h4>
-              
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Start Odometer *</label>
-                  <input
-                    type="number"
-                    required
-                    step="0.1"
-                    value={formData.startOdometer}
-                    onChange={(e) => setFormData(prev => ({ ...prev, startOdometer: e.target.value }))}
-                    className="w-full px-4 py-2.75 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    placeholder="Miles at start"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">End Odometer *</label>
-                  <input
-                    type="number"
-                    required
-                    step="0.1"
-                    value={formData.endOdometer}
-                    onChange={(e) => setFormData(prev => ({ ...prev, endOdometer: e.target.value }))}
-                    className="w-full px-4 py-2.75 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    placeholder="Miles at end"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Total Miles</label>
-                  <div className="px-4 py-2.75 bg-gray-600 border border-gray-500 rounded-lg text-white">
-                    {currentMiles.toFixed(1)} miles
-                  </div>
-                  {formData.tripCategory === 'business' && currentMiles > 0 && (
-                    <div className="text-emerald-400 text-sm mt-1">
-                      Tax deduction: ${currentDeduction.toFixed(2)}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Locations & Purpose */}
-            <div className="bg-gray-700/30 rounded-lg p-4">
-              <h4 className="text-lg font-semibold text-white mb-4">Trip Details</h4>
-              
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Start Location *</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.startLocation}
-                    onChange={(e) => setFormData(prev => ({ ...prev, startLocation: e.target.value }))}
-                    className="w-full px-4 py-2.75 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    placeholder="123 Start St, City, State"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">End Location *</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.endLocation}
-                    onChange={(e) => setFormData(prev => ({ ...prev, endLocation: e.target.value }))}
-                    className="w-full px-4 py-2.75 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    placeholder="456 End Ave, City, State"
-                  />
-                </div>
-              </div>
-              
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-300 mb-2">Business Purpose *</label>
+      <Modal isOpen={showForm} onClose={() => { setShowForm(false); setEditingEntry(null); }} title={editingEntry ? 'Edit Trip Entry' : 'Log New Trip'} maxWidth="md">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Trip Information */}
+          <div className="bg-gray-700/30 rounded-lg p-4">
+            <h4 className="text-lg font-semibold text-white mb-4">Trip Information</h4>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Trip Date *</label>
                 <input
-                  type="text"
+                  type="date"
                   required
-                  value={formData.businessPurpose}
-                  onChange={(e) => setFormData(prev => ({ ...prev, businessPurpose: e.target.value }))}
+                  value={formData.tripDate}
+                  onChange={(e) => setFormData(prev => ({ ...prev, tripDate: e.target.value }))}
                   className="w-full px-4 py-2.75 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  placeholder="Client meeting, site visit, delivery, etc."
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Additional Notes</label>
-                <textarea
-                  rows={2}
-                  value={formData.notes}
-                  onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                <label className="block text-sm font-medium text-gray-300 mb-2">Trip Category *</label>
+                <select
+                  required
+                  value={formData.tripCategory}
+                  onChange={(e) => setFormData(prev => ({ ...prev, tripCategory: e.target.value as any }))}
                   className="w-full px-4 py-2.75 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  placeholder="Meeting with John Smith about project update..."
+                >
+                  <option value="business">Business</option>
+                  <option value="personal">Personal</option>
+                  <option value="commuting">Commuting</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Vehicle</label>
+                <input
+                  type="text"
+                  value={formData.vehicle}
+                  onChange={(e) => setFormData(prev => ({ ...prev, vehicle: e.target.value }))}
+                  className="w-full px-4 py-2.75 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  placeholder="e.g., 2023 Honda Civic, Company Vehicle #1"
                 />
               </div>
             </div>
+          </div>
 
-            {/* Related Expenses */}
-            <div className="bg-gray-700/30 rounded-lg p-4">
-              <h4 className="text-lg font-semibold text-white mb-4">Related Expenses</h4>
+          {/* Odometer & Distance */}
+          <div className="bg-gray-700/30 rounded-lg p-4">
+            <h4 className="text-lg font-semibold text-white mb-4">Odometer Readings</h4>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Start Odometer *</label>
+                <input
+                  type="number"
+                  required
+                  step="0.1"
+                  value={formData.startOdometer}
+                  onChange={(e) => setFormData(prev => ({ ...prev, startOdometer: e.target.value }))}
+                  className="w-full px-4 py-2.75 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  placeholder="Miles at start"
+                />
+              </div>
               
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Tolls ($)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={formData.tollsCost}
-                    onChange={(e) => setFormData(prev => ({ ...prev, tollsCost: e.target.value }))}
-                    className="w-full px-4 py-2.75 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    placeholder="0.00"
-                  />
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">End Odometer *</label>
+                <input
+                  type="number"
+                  required
+                  step="0.1"
+                  value={formData.endOdometer}
+                  onChange={(e) => setFormData(prev => ({ ...prev, endOdometer: e.target.value }))}
+                  className="w-full px-4 py-2.75 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  placeholder="Miles at end"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Total Miles</label>
+                <div className="px-4 py-2.75 bg-gray-600 border border-gray-500 rounded-lg text-white">
+                  {currentMiles.toFixed(1)} miles
                 </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Parking ($)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={formData.parkingCost}
-                    onChange={(e) => setFormData(prev => ({ ...prev, parkingCost: e.target.value }))}
-                    className="w-full px-4 py-2.75 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    placeholder="0.00"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Other Expenses ($)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={formData.otherExpenses}
-                    onChange={(e) => setFormData(prev => ({ ...prev, otherExpenses: e.target.value }))}
-                    className="w-full px-4 py-2.75 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    placeholder="0.00"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Driver</label>
-                  <input
-                    type="text"
-                    value={formData.driver}
-                    onChange={(e) => setFormData(prev => ({ ...prev, driver: e.target.value }))}
-                    className="w-full px-4 py-2.75 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    placeholder="Driver name"
-                  />
-                </div>
+                {formData.tripCategory === 'business' && currentMiles > 0 && (
+                  <div className="text-emerald-400 text-sm mt-1">
+                    Tax deduction: ${currentDeduction.toFixed(2)}
+                  </div>
+                )}
               </div>
             </div>
+          </div>
 
-            <div className="flex justify-end space-x-3">
-              <button
-                type="button"
-                onClick={() => { setShowForm(false); setEditingEntry(null); }}
-                className="px-6 py-2.75 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors duration-200"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-6 py-2.75 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors duration-200"
-              >
-                {editingEntry ? 'Update Trip' : 'Log Trip'}
-              </button>
+          {/* Locations & Purpose */}
+          <div className="bg-gray-700/30 rounded-lg p-4">
+            <h4 className="text-lg font-semibold text-white mb-4">Trip Details</h4>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Start Location *</label>
+                <input
+                  type="text"
+                  required
+                  value={formData.startLocation}
+                  onChange={(e) => setFormData(prev => ({ ...prev, startLocation: e.target.value }))}
+                  className="w-full px-4 py-2.75 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  placeholder="123 Start St, City, State"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">End Location *</label>
+                <input
+                  type="text"
+                  required
+                  value={formData.endLocation}
+                  onChange={(e) => setFormData(prev => ({ ...prev, endLocation: e.target.value }))}
+                  className="w-full px-4 py-2.75 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  placeholder="456 End Ave, City, State"
+                />
+              </div>
             </div>
-          </form>
-        </div>
-      )}
+            
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-300 mb-2">Business Purpose *</label>
+              <input
+                type="text"
+                required
+                value={formData.businessPurpose}
+                onChange={(e) => setFormData(prev => ({ ...prev, businessPurpose: e.target.value }))}
+                className="w-full px-4 py-2.75 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                placeholder="Client meeting, site visit, delivery, etc."
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Additional Notes</label>
+              <textarea
+                rows={2}
+                value={formData.notes}
+                onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                className="w-full px-4 py-2.75 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                placeholder="Meeting with John Smith about project update..."
+              />
+            </div>
+          </div>
+
+          {/* Related Expenses */}
+          <div className="bg-gray-700/30 rounded-lg p-4">
+            <h4 className="text-lg font-semibold text-white mb-4">Related Expenses</h4>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Tolls ($)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.tollsCost}
+                  onChange={(e) => setFormData(prev => ({ ...prev, tollsCost: e.target.value }))}
+                  className="w-full px-4 py-2.75 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  placeholder="0.00"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Parking ($)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.parkingCost}
+                  onChange={(e) => setFormData(prev => ({ ...prev, parkingCost: e.target.value }))}
+                  className="w-full px-4 py-2.75 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  placeholder="0.00"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Other Expenses ($)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.otherExpenses}
+                  onChange={(e) => setFormData(prev => ({ ...prev, otherExpenses: e.target.value }))}
+                  className="w-full px-4 py-2.75 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  placeholder="0.00"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Driver</label>
+                <input
+                  type="text"
+                  value={formData.driver}
+                  onChange={(e) => setFormData(prev => ({ ...prev, driver: e.target.value }))}
+                  className="w-full px-4 py-2.75 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  placeholder="Driver name"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end space-x-3">
+            <button
+              type="button"
+              onClick={() => { setShowForm(false); setEditingEntry(null); }}
+              className="px-6 py-2.75 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors duration-200"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-6 py-2.75 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors duration-200"
+            >
+              {editingEntry ? 'Update Trip' : 'Log Trip'}
+            </button>
+          </div>
+        </form>
+      </Modal>
 
       {/* Mileage Entries List */}
       <div className="space-y-4">
