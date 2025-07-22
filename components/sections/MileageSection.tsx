@@ -35,6 +35,48 @@ interface MileageSectionProps {
   setMileageEntries: (entries: MileageEntry[]) => void;
 }
 
+// Add ExportModal component (reusable)
+const ExportModal = ({ isOpen, onClose, onExport, sectionName }) => {
+  const [option, setOption] = useState('csv');
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div className="w-full max-w-md bg-gray-800 rounded-lg shadow-xl border border-emerald-700">
+        <div className="flex items-center justify-between p-4 border-b border-gray-700">
+          <h3 className="text-lg font-semibold text-gray-100">Export {sectionName}</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-200 transition-colors" aria-label="Close modal">✕</button>
+        </div>
+        <div className="p-4 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Export as:</label>
+            <div className="space-y-2">
+              <label className="flex items-center gap-2">
+                <input type="radio" name="exportType" value="csv" checked={option === 'csv'} onChange={() => setOption('csv')} />
+                <span>CSV (spreadsheet)</span>
+              </label>
+              <label className="flex items-center gap-2">
+                <input type="radio" name="exportType" value="pdf" checked={option === 'pdf'} onChange={() => setOption('pdf')} />
+                <span>PDF (print-optimized)</span>
+              </label>
+              <label className="flex items-center gap-2">
+                <input type="radio" name="exportType" value="print" checked={option === 'print'} onChange={() => setOption('print')} />
+                <span>Print</span>
+              </label>
+            </div>
+          </div>
+          <div className="text-xs text-gray-400 bg-gray-900 rounded p-2">
+            Export will include only currently filtered results.
+          </div>
+          <div className="flex justify-end gap-2 mt-4">
+            <button onClick={onClose} className="px-4 py-2 rounded bg-gray-700 text-gray-200 hover:bg-gray-600">Cancel</button>
+            <button onClick={() => onExport(option)} className="px-4 py-2 rounded bg-emerald-600 text-white hover:bg-emerald-700 font-semibold">Export</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const MileageSection: React.FC<MileageSectionProps> = ({
   mileageEntries,
   setMileageEntries
@@ -44,6 +86,7 @@ const MileageSection: React.FC<MileageSectionProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
+  const [showExportModal, setShowExportModal] = useState(false);
 
   // IRS standard mileage rate for 2025
   const IRS_MILEAGE_RATE = 0.67;
@@ -197,23 +240,16 @@ const MileageSection: React.FC<MileageSectionProps> = ({
           <h1 className="text-3xl font-bold text-white mb-2">Mileage Tracking</h1>
           <p className="text-gray-400">IRS-compliant mileage logging for business tax deductions</p>
         </div>
-        
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="bg-gray-600/10 border border-emerald-700 rounded-lg p-4 text-center">
-            <div className="text-lg font-bold text-emerald-300">{totalBusinessMiles.toFixed(1)}</div>
-            <div className="text-xs text-gray-400">Business Miles</div>
-          </div>
-          <div className="bg-gray-600/10 border border-emerald-700 rounded-lg p-4 text-center">
-            <div className="text-lg font-bold text-blue-300">${totalDeduction.toFixed(2)}</div>
-            <div className="text-xs text-gray-400">Tax Deduction</div>
-          </div>
-          <div className="bg-gray-600/10 border border-emerald-700 rounded-lg p-4 text-center">
-            <div className="text-lg font-bold text-red-300">${totalExpenses.toFixed(2)}</div>
-            <div className="text-xs text-gray-400">Other Expenses</div>
-          </div>
-        </div>
+        <button
+          onClick={() => setShowExportModal(true)}
+          className="bg-emerald-700 text-white px-4 py-2 rounded-lg hover:bg-emerald-800 transition-colors duration-200 flex items-center space-x-2"
+          title="Export filtered mileage logs"
+        >
+          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 5v14m7-7H5" /></svg>
+          <span>Export</span>
+        </button>
       </div>
+      <ExportModal isOpen={showExportModal} onClose={() => setShowExportModal(false)} onExport={(type) => { setShowExportModal(false); /* TODO: implement export logic */ }} sectionName="Mileage Logs" />
 
       {/* Search and Filter Section */}
       <div className="flex flex-col gap-4 mb-6">

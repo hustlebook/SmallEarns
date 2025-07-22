@@ -9,6 +9,48 @@ import { Modal } from '../Shared/Modal';
 import { ConfirmDialog } from '../Shared/ConfirmDialog';
 import { Button } from '../Shared/Button';
 
+// Add ExportModal component (reusable)
+const ExportModal = ({ isOpen, onClose, onExport, sectionName }) => {
+  const [option, setOption] = useState('csv');
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div className="w-full max-w-md bg-gray-800 rounded-lg shadow-xl border border-emerald-700">
+        <div className="flex items-center justify-between p-4 border-b border-gray-700">
+          <h3 className="text-lg font-semibold text-gray-100">Export {sectionName}</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-200 transition-colors" aria-label="Close modal">✕</button>
+        </div>
+        <div className="p-4 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Export as:</label>
+            <div className="space-y-2">
+              <label className="flex items-center gap-2">
+                <input type="radio" name="exportType" value="csv" checked={option === 'csv'} onChange={() => setOption('csv')} />
+                <span>CSV (spreadsheet)</span>
+              </label>
+              <label className="flex items-center gap-2">
+                <input type="radio" name="exportType" value="pdf" checked={option === 'pdf'} onChange={() => setOption('pdf')} />
+                <span>PDF (print-optimized)</span>
+              </label>
+              <label className="flex items-center gap-2">
+                <input type="radio" name="exportType" value="print" checked={option === 'print'} onChange={() => setOption('print')} />
+                <span>Print</span>
+              </label>
+            </div>
+          </div>
+          <div className="text-xs text-gray-400 bg-gray-900 rounded p-2">
+            Export will include only currently filtered results.
+          </div>
+          <div className="flex justify-end gap-2 mt-4">
+            <button onClick={onClose} className="px-4 py-2 rounded bg-gray-700 text-gray-200 hover:bg-gray-600">Cancel</button>
+            <button onClick={() => onExport(option)} className="px-4 py-2 rounded bg-emerald-600 text-white hover:bg-emerald-700 font-semibold">Export</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const ExpensesSection = () => {
   const { state, dispatch } = useBusiness();
   const { expenses } = state;
@@ -21,6 +63,7 @@ const ExpensesSection = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingExpense, setEditingExpense] = useState(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(null);
+  const [showExportModal, setShowExportModal] = useState(false);
   
   // Helper functions
   const addExpense = (expense) => {
@@ -125,6 +168,14 @@ const ExpensesSection = () => {
           <h2 className="text-2xl font-bold text-gray-100">Expenses</h2>
         </div>
         <button
+          onClick={() => setShowExportModal(true)}
+          className="bg-emerald-700 text-white px-4 py-2 rounded-lg hover:bg-emerald-800 transition-colors duration-200 flex items-center space-x-2"
+          title="Export filtered expenses"
+        >
+          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 5v14m7-7H5" /></svg>
+          <span>Export</span>
+        </button>
+        <button
           onClick={() => setShowAddModal(true)}
           className="bg-emerald-600 text-white px-4 py-3 sm:py-2 min-h-[44px] rounded-lg hover:bg-emerald-700 transition-colors duration-200 flex items-center space-x-2"
         >
@@ -132,6 +183,7 @@ const ExpensesSection = () => {
           <span>Add Expense</span>
         </button>
       </div>
+      <ExportModal isOpen={showExportModal} onClose={() => setShowExportModal(false)} onExport={(type) => { setShowExportModal(false); /* TODO: implement export logic */ }} sectionName="Expenses" />
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
