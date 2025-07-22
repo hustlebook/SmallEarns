@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext, useContext, useMemo, Suspense, useCallback } from 'react';
+import React, { useState, useEffect, createContext, useContext, useMemo, Suspense, useCallback, useRef } from 'react';
 import ErrorBoundary from './ErrorBoundary';
 import { validateAndMigrateData, runDataHealthCheck, safeSaveToStorage, safeLoadFromStorage } from '../utils/dataValidation';
 import { createDebouncedSave } from '../utils/debounce';
@@ -180,11 +180,33 @@ const MainLayout = ({ children, currentView, setCurrentView }) => {
     { id: 'income', label: 'Income', icon: DollarSign },
     { id: 'expenses', label: 'Expenses', icon: Wallet },
     { id: 'mileage', label: 'Mileage', icon: Car },
-
-
     { id: 'invoices', label: 'Invoices', icon: ReceiptText },
     { id: 'reports', label: 'Reports', icon: TrendingUp },
   ];
+
+  const navRef = useRef(null);
+  const [showLeftIndicator, setShowLeftIndicator] = useState(false);
+  const [showRightIndicator, setShowRightIndicator] = useState(false);
+
+  // Scroll nav bar to the rightmost item on mount if starting on Reports
+  useEffect(() => {
+    if (navRef.current && currentView === 'reports') {
+      navRef.current.scrollLeft = navRef.current.scrollWidth;
+    }
+  }, [currentView]);
+
+  // Show/hide scroll indicators
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+    const handleScroll = () => {
+      setShowLeftIndicator(nav.scrollLeft > 4);
+      setShowRightIndicator(nav.scrollLeft + nav.offsetWidth < nav.scrollWidth - 4);
+    };
+    handleScroll();
+    nav.addEventListener('scroll', handleScroll);
+    return () => nav.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 flex flex-col font-sans pb-16">
@@ -192,9 +214,7 @@ const MainLayout = ({ children, currentView, setCurrentView }) => {
       <header className="bg-gray-800 shadow-lg p-4 rounded-b-lg relative">
         <h1 className="text-2xl font-bold text-emerald-300 text-center">SmallEarns</h1>
         <p className="text-sm text-gray-400 text-center mt-1">Track your hustle, find your peace.</p>
-
       </header>
-
       {/* Main Content Area */}
       <main className="flex-grow p-4 overflow-y-auto">
         <AnimatePresence mode="wait">
@@ -209,24 +229,37 @@ const MainLayout = ({ children, currentView, setCurrentView }) => {
           </motion.div>
         </AnimatePresence>
       </main>
-
       {/* Bottom Navigation */}
-      <nav className="bg-gray-800 shadow-lg p-2 rounded-t-lg fixed bottom-0 left-0 right-0 z-10">
-        <div className="flex md:justify-around overflow-x-auto scrollbar-hide">
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setCurrentView(item.id)}
-              className={`flex-shrink-0 flex flex-col items-center justify-center py-1.5 px-2 mx-0.5 rounded-lg text-xs font-medium transition-colors duration-200 md:flex-1
-                ${currentView === item.id
-                  ? 'bg-emerald-700 text-white shadow-md'
-                  : 'text-gray-300 hover:bg-gray-700'
-                }`}
-            >
-              <item.icon size={18} className="mb-0.5 flex-shrink-0" />
-              <span className="text-center leading-tight whitespace-nowrap">{item.label}</span>
-            </button>
-          ))}
+      <nav className="bg-gray-800 shadow-lg p-2 rounded-t-lg fixed bottom-0 left-0 right-0 z-10 min-h-[64px] pb-[env(safe-area-inset-bottom)]">
+        <div className="relative">
+          {/* Left indicator */}
+          {showLeftIndicator && (
+            <div className="pointer-events-none absolute left-0 top-0 h-full w-6 bg-gradient-to-r from-gray-900/80 to-transparent z-20" />
+          )}
+          {/* Right indicator */}
+          {showRightIndicator && (
+            <div className="pointer-events-none absolute right-0 top-0 h-full w-6 bg-gradient-to-l from-gray-900/80 to-transparent z-20" />
+          )}
+          <div
+            ref={navRef}
+            className="flex md:justify-around overflow-x-auto scrollbar-hide relative"
+            style={{ scrollBehavior: 'smooth' }}
+          >
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => setCurrentView(item.id)}
+                className={`flex-shrink-0 flex flex-col items-center justify-center py-2 px-3 mx-0.5 rounded-lg text-xs font-medium transition-colors duration-200 md:flex-1 min-w-[64px] min-h-[48px]
+                  ${currentView === item.id
+                    ? 'bg-emerald-700 text-white shadow-md'
+                    : 'text-gray-300 hover:bg-gray-700'
+                  }`}
+              >
+                <item.icon size={22} className="mb-0.5 flex-shrink-0" />
+                <span className="text-center leading-tight whitespace-nowrap">{item.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </nav>
     </div>
@@ -554,7 +587,7 @@ const ClientList = () => {
       {sortedAndFilteredClients.length === 0 && !isAdding && !editingClient && (
         <div className="text-center bg-gray-800 p-6 rounded-lg shadow-md mt-8">
           {/* Relatable empty state */}
-          <p className="text-gray-400 text-lg mb-4">No clients yet. Keep building — they’ll come.</p>
+          <p className="text-gray-400 text-lg mb-4">No clients yet. Keep building — they'll come.</p>
           <p className="text-gray-300 text-md mb-6">Ready to add your first connection? 👇</p>
           <button
             onClick={() => setIsAdding(true)}
@@ -1347,7 +1380,7 @@ const AppointmentLog = () => {
       {getDaysToDisplay.length === 0 && filteredAndSortedAppointments.length === 0 && !isAdding && !editingAppointment ? (
         <div className="text-center bg-gray-800 p-6 rounded-lg shadow-md mt-8">
           {/* Relatable empty state */}
-          <p className="text-gray-400 text-lg mb-4">No appointments yet. Keep building — they’ll come.</p>
+          <p className="text-gray-400 text-lg mb-4">No appointments yet. Keep building — they'll come.</p>
           <p className="text-gray-300 text-md mb-6">Time to fill your calendar! 👇</p>
           <button
             onClick={() => setIsAdding(true)}
@@ -1571,7 +1604,7 @@ const ExpenseTracker = () => {
     };
 
     addExpenseEntry({ id: generateId(), ...expenseData });
-    setAlertMessage('Expense logged. That’s what hustle looks like!'); // Micro-copy
+    setAlertMessage('Expense logged. That's what hustle looks like!'); // Micro-copy
     setIsAdding(false); // Close the add modal
     // Clear form after submission
     setAmount('');
@@ -2189,7 +2222,7 @@ const IncomeTracker = () => {
     };
 
     addIncomeEntry({ id: generateId(), ...incomeData });
-    setAlertMessage(`Logged your last $${parsedAmount.toFixed(2)}? That’s what hustle looks like.`); // Micro-copy
+    setAlertMessage(`Logged your last $${parsedAmount.toFixed(2)}? That's what hustle looks like.`); // Micro-copy
     setIsAdding(false); // Close the add modal
     // Clear form after submission
     setAmount('');
