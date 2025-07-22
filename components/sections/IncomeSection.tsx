@@ -54,7 +54,7 @@ const IncomeSection = ({ incomeEntries, clients, addIncome, updateIncome, delete
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors duration-200 flex items-center space-x-2"
+          className="bg-emerald-600 text-white px-4 py-3 sm:py-2 min-h-[44px] rounded-lg hover:bg-emerald-700 transition-colors duration-200 flex items-center space-x-2"
         >
           <Plus className="w-4 h-4" />
           <span>Add Income</span>
@@ -63,20 +63,20 @@ const IncomeSection = ({ incomeEntries, clients, addIncome, updateIncome, delete
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 p-6 rounded-lg text-white">
+        <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 p-2 sm:p-3 md:p-6 rounded-lg text-white">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-emerald-100 text-sm">Total Income</p>
-              <p className="text-3xl font-bold">${totalIncome.toFixed(2)}</p>
+              <p className="text-emerald-100 text-xs sm:text-sm">Total Income</p>
+              <p className="text-xl sm:text-2xl md:text-3xl font-bold">${totalIncome.toFixed(2)}</p>
             </div>
             <Wallet className="w-8 h-8 text-emerald-200" />
           </div>
         </div>
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 rounded-lg text-white">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-2 sm:p-3 md:p-6 rounded-lg text-white">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-blue-100 text-sm">This Month</p>
-              <p className="text-3xl font-bold">${monthlyIncome.toFixed(2)}</p>
+              <p className="text-blue-100 text-xs sm:text-sm">This Month</p>
+              <p className="text-xl sm:text-2xl md:text-3xl font-bold">${monthlyIncome.toFixed(2)}</p>
             </div>
             <DollarSign className="w-8 h-8 text-blue-200" />
           </div>

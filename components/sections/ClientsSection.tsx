@@ -47,21 +47,21 @@ const ClientsSection = ({ clients, addClient, updateClient, deleteClient }) => {
             key={client.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-emerald-600 transition-colors duration-200"
+            className="bg-gray-800 p-2 sm:p-3 md:p-6 rounded-lg border border-gray-700 hover:border-emerald-600 transition-colors duration-200"
           >
             <div className="flex justify-between items-start mb-3">
               <h3 className="text-xl font-semibold text-gray-100">{client.name}</h3>
               <div className="flex space-x-2">
                 <button
                   onClick={() => setEditingClient(client)}
-                  className="p-2 rounded-full bg-emerald-700 text-emerald-100 hover:bg-emerald-600 transition-colors duration-200 flex items-center justify-center w-8 h-8"
+                  className="p-3 sm:p-2 rounded-full bg-emerald-700 text-emerald-100 hover:bg-emerald-600 transition-colors duration-200 flex items-center justify-center w-11 h-11 sm:w-8 sm:h-8 min-w-[44px] min-h-[44px]"
                   aria-label="Edit client"
                 >
                   <Edit className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => deleteClient(client.id)}
-                  className="p-2 rounded-full bg-red-700 text-red-100 hover:bg-red-600 transition-colors duration-200 flex items-center justify-center w-8 h-8"
+                  className="p-3 sm:p-2 rounded-full bg-red-700 text-red-100 hover:bg-red-600 transition-colors duration-200 flex items-center justify-center w-11 h-11 sm:w-8 sm:h-8 min-w-[44px] min-h-[44px]"
                   aria-label="Delete client"
                 >
                   <Trash2 className="w-4 h-4" />
